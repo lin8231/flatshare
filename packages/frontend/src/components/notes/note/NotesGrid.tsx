@@ -16,18 +16,19 @@ interface NotesGridProps {
     | undefined;
 }
 
-const NotesGrid: React.FC<NotesGridProps> = ({ notes }) => {
+const NotesGrid: React.FC<NotesGridProps> = ({ Notes }) => {
   const [plainvisible, setPlainVisible] = useState(false);
   const [secretvisible, setSecretVisible] = useState(false);
   const [wifivisible, setWifiVisible] = useState(false);
+  const [wifipass, setWifiPass] = useState('');
+  const [wifiuser, setWifiUser] = useState('');
   const [activeName, setActiveName] = useState('');
   const [activeValue, setActiveValue] = useState('');
-  const [activeId, setActiveId] = useState('');
   const [qrCodeText, setQrCodeText] = useState('');
   const [qrvisible, setQRVisible] = useState(false);
   const [loading] = useState(false);
-
   const onClickCard = (item: any) => {
+    // NEED TO CHANGE SO TYPES WORK PROPERLY
     switch (item.type) {
       case 'PLAIN':
         setPlainVisible(true);
@@ -36,6 +37,8 @@ const NotesGrid: React.FC<NotesGridProps> = ({ notes }) => {
         setSecretVisible(true);
         break;
       case 'WIFI':
+        setWifiUser(item.value.substring(0, item.value.indexOf(':')));
+        setWifiPass(item.value.substring(item.value.indexOf(':') + 1));
         setWifiVisible(true);
         break;
     }
@@ -47,11 +50,8 @@ const NotesGrid: React.FC<NotesGridProps> = ({ notes }) => {
         visible={plainvisible}
         setVisible={setPlainVisible}
         loading={loading}
-        value={activeValue}
-        setValue={setActiveValue}
+        data={activeValue}
         title={activeName}
-        setTitle={setActiveName}
-        id={activeId}
       />
 
       <WifiModal
@@ -60,25 +60,18 @@ const NotesGrid: React.FC<NotesGridProps> = ({ notes }) => {
         setQrCodeText={setQrCodeText}
         qrCodeText={qrCodeText}
         loading={loading}
-        value={activeValue}
-        setValue={setActiveValue}
+        userName={wifiuser}
+        password={wifipass}
         encryption={'L'}
         qrvisible={qrvisible}
         setQRVisible={setQRVisible}
-        title={activeName}
-        setTitle={setActiveName}
-        id={activeId}
       />
 
       <SecretModal
         visible={secretvisible}
         setVisible={setSecretVisible}
         loading={loading}
-        value={activeValue}
-        setValue={setActiveValue}
-        title={activeName}
-        setTitle={setActiveName}
-        id={activeId}
+        data={activeValue}
       />
 
       <Grid.Container gap={2} justify="center">
@@ -91,7 +84,6 @@ const NotesGrid: React.FC<NotesGridProps> = ({ notes }) => {
               onClick={(event) => {
                 setActiveName(item.name);
                 setActiveValue(item.value);
-                setActiveId(item.id);
                 onClickCard(item);
               }}
             >
